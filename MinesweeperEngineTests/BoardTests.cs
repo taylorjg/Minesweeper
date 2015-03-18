@@ -18,16 +18,16 @@ namespace MinesweeperEngineTests
         public void UncoveringSquareOnBoardWithOneSquareAndNoMinesIsCleared()
         {
             var board = Board.Create(1, 1, Enumerable.Empty<Coords>());
-            var newBoard = board.Uncover(new Coords(0, 0));
-            Assert.That(newBoard.IsCleared, Is.True, "Expected board to be cleared");
+            board.Uncover(new Coords(0, 0));
+            Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
         }
 
         [Test]
         public void UncoveringSquareOnBoardWithTwoSquaresAndNoMinesIsCleared()
         {
             var board = Board.Create(1, 2, Enumerable.Empty<Coords>());
-            var newBoard = board.Uncover(new Coords(0, 0));
-            Assert.That(newBoard.IsCleared, Is.True, "Expected board to be cleared");
+            board.Uncover(new Coords(0, 0));
+            Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
         }
     }
 }

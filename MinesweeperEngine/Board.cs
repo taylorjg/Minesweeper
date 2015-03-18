@@ -15,14 +15,13 @@ namespace MinesweeperEngine
         {
             _numRows = numRows;
             _numCols = numCols;
-            _squareData = new Dictionary<Coords, SquareData>();
+            _squareData = mines.ToDictionary(coords => coords, coords => new SquareData());
         }
 
-        public Board Uncover(Coords coords)
+        public void Uncover(Coords coords)
         {
-            _squareData[coords] = new SquareData{SquareState = SquareState.Uncovered};
+            _squareData[coords] = new SquareData {IsRevealed = true};
             UncoverNeighbours(coords);
-            return this;
         }
 
         public bool IsCleared {
@@ -34,7 +33,7 @@ namespace MinesweeperEngine
                     {
                         SquareData squareData;
                         if (!_squareData.TryGetValue(new Coords(row, col), out squareData)) return false;
-                        if (squareData.SquareState != SquareState.Uncovered) return false;
+                        if (!squareData.IsRevealed) return false;
                     }
                 }
 
@@ -44,7 +43,7 @@ namespace MinesweeperEngine
 
         private void UncoverNeighbours(Coords coords)
         {
-            ForEachNeighbour(coords, neighbour => _squareData[neighbour] = new SquareData { SquareState = SquareState.Uncovered });
+            ForEachNeighbour(coords, neighbour => _squareData[neighbour] = new SquareData {IsRevealed = true});
         }
 
         private void ForEachNeighbour(Coords coords, Action<Coords> action)
