@@ -15,11 +15,19 @@ namespace MinesweeperEngineTests
         }
 
         [Test]
+        public void BoardIsInitiallyNotDetonated()
+        {
+            var board = Board.Create(2, 2, Enumerable.Empty<Coords>());
+            Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");
+        }
+
+        [Test]
         public void UncoveringSquareOnBoardWithOneSquareAndNoMinesIsCleared()
         {
             var board = Board.Create(1, 1, Enumerable.Empty<Coords>());
             board.Uncover(new Coords(0, 0));
             Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
+            Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");
         }
 
         [Test]
@@ -28,6 +36,7 @@ namespace MinesweeperEngineTests
             var board = Board.Create(1, 2, Enumerable.Empty<Coords>());
             board.Uncover(new Coords(0, 0));
             Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
+            Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");
         }
 
         [Test]
@@ -36,6 +45,7 @@ namespace MinesweeperEngineTests
             var board = Board.Create(5, 5, Enumerable.Empty<Coords>());
             board.Uncover(new Coords(0, 0));
             Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
+            Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");
         }
 
         [Test]
