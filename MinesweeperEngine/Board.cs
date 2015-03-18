@@ -21,19 +21,27 @@ namespace MinesweeperEngine
         public void Uncover(Coords coords)
         {
             UncoverSquare(coords);
-            UncoverNeighbours(coords);
         }
 
-        public bool IsCleared {
+        public void Flag(Coords coords)
+        {
+            FlagSquare(coords);
+        }
+
+        public bool IsCleared
+        {
             get
             {
+                Func<SquareData, bool> correctlyRevealed = sd => sd.IsRevealed && !sd.IsMine;
+                Func<SquareData, bool> correctlyFlagged = sd => sd.IsFlagged && sd.IsMine;
+
                 foreach (var row in Enumerable.Range(0, _numRows))
                 {
                     foreach (var col in Enumerable.Range(0, _numCols))
                     {
                         SquareData squareData;
                         if (!_squareData.TryGetValue(new Coords(row, col), out squareData)) return false;
-                        if (!squareData.IsRevealed) return false;
+                        if (!correctlyRevealed(squareData) && !correctlyFlagged(squareData)) return false;
                     }
                 }
 
@@ -62,11 +70,7 @@ namespace MinesweeperEngine
 
         private void UncoverNeighbours(Coords coords)
         {
-            ForEachNeighbour(coords, neighbourCoords =>
-            {
-                var wasUncovered = UncoverSquare(neighbourCoords);
-                if (!wasUncovered) UncoverNeighbours(neighbourCoords);
-            });
+            ForEachNeighbour(coords, neighbourCoords => UncoverSquare(neighbourCoords));
         }
 
         private void ForEachNeighbour(Coords coords, Action<Coords> action)
@@ -93,14 +97,49 @@ namespace MinesweeperEngine
             if (_squareData.TryGetValue(coords, out squareData))
             {
                 if (squareData.IsRevealed) return true;
-                squareData.IsRevealed = true;
             }
             else
             {
-                _squareData[coords] = new SquareData { IsRevealed = true };
+                _squareData[coords] = squareData = new SquareData();
+            }
+
+            squareData.IsRevealed = true;
+
+            if (squareData.NumNeighouringMines == null)
+            {
+                var numNeighouringMines = 0;
+                ForEachNeighbour(coords, neighbourCoords => numNeighouringMines += IsMine(neighbourCoords) ? 1 : 0);
+                squareData.NumNeighouringMines = numNeighouringMines;
+            }
+
+            if (squareData.NumNeighouringMines.Value == 0)
+            {
+                UncoverNeighbours(coords);
             }
 
             return false;
+        }
+
+        private void FlagSquare(Coords coords)
+        {
+            SquareData squareData;
+
+            if (_squareData.TryGetValue(coords, out squareData))
+            {
+                if (squareData.IsFlagged) return;
+            }
+            else
+            {
+                _squareData[coords] = squareData = new SquareData();
+            }
+
+            squareData.IsFlagged = true;
+        }
+
+        private bool IsMine(Coords coords)
+        {
+            SquareData squareData;
+            return (_squareData.TryGetValue(coords, out squareData)) && squareData.IsMine;
         }
 
         private readonly int _numRows;

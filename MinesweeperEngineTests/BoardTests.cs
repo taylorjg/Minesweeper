@@ -45,5 +45,15 @@ namespace MinesweeperEngineTests
             board.Uncover(new Coords(0, 0));
             Assert.That(board.IsDetonated, Is.True, "Expected board to be detonated");
         }
+
+        [Test]
+        public void BoardWithOneMineAndOneEmptySquareCanBeCleared()
+        {
+            var board = Board.Create(2, 1, new[] {new Coords(0, 0)});
+            board.Flag(new Coords(0, 0));
+            board.Uncover(new Coords(1, 0));
+            Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
+            Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");
+        }
     }
 }
