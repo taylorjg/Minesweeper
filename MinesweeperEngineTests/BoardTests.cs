@@ -29,5 +29,21 @@ namespace MinesweeperEngineTests
             board.Uncover(new Coords(0, 0));
             Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
         }
+
+        [Test]
+        public void UncoveringSquareOnBoardWithLotsOfSquaresAndNoMinesIsCleared()
+        {
+            var board = Board.Create(5, 5, Enumerable.Empty<Coords>());
+            board.Uncover(new Coords(0, 0));
+            Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
+        }
+
+        [Test]
+        public void UncoveringMineOnBoardWithOneSquareAndOneMinesIsDetonated()
+        {
+            var board = Board.Create(1, 1, new[] {new Coords(0, 0)});
+            board.Uncover(new Coords(0, 0));
+            Assert.That(board.IsDetonated, Is.True, "Expected board to be detonated");
+        }
     }
 }

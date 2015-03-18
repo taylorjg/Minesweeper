@@ -15,12 +15,12 @@ namespace MinesweeperEngine
         {
             _numRows = numRows;
             _numCols = numCols;
-            _squareData = mines.ToDictionary(coords => coords, coords => new SquareData());
+            _squareData = mines.ToDictionary(coords => coords, coords => new SquareData {IsMine = true});
         }
 
         public void Uncover(Coords coords)
         {
-            _squareData[coords] = new SquareData {IsRevealed = true};
+            UncoverSquare(coords);
             UncoverNeighbours(coords);
         }
 
@@ -41,9 +41,32 @@ namespace MinesweeperEngine
             }
         }
 
+        public bool IsDetonated {
+            get
+            {
+                foreach (var row in Enumerable.Range(0, _numRows))
+                {
+                    foreach (var col in Enumerable.Range(0, _numCols))
+                    {
+                        SquareData squareData;
+                        if (_squareData.TryGetValue(new Coords(row, col), out squareData))
+                        {
+                            if (squareData.IsRevealed && squareData.IsMine) return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+        }
+
         private void UncoverNeighbours(Coords coords)
         {
-            ForEachNeighbour(coords, neighbour => _squareData[neighbour] = new SquareData {IsRevealed = true});
+            ForEachNeighbour(coords, neighbourCoords =>
+            {
+                var wasUncovered = UncoverSquare(neighbourCoords);
+                if (!wasUncovered) UncoverNeighbours(neighbourCoords);
+            });
         }
 
         private void ForEachNeighbour(Coords coords, Action<Coords> action)
@@ -61,6 +84,23 @@ namespace MinesweeperEngine
                 let neighbourCoords = new Coords(row, col)
                 where !neighbourCoords.Equals(coords)
                 select neighbourCoords;
+        }
+
+        private bool UncoverSquare(Coords coords)
+        {
+            SquareData squareData;
+
+            if (_squareData.TryGetValue(coords, out squareData))
+            {
+                if (squareData.IsRevealed) return true;
+                squareData.IsRevealed = true;
+            }
+            else
+            {
+                _squareData[coords] = new SquareData { IsRevealed = true };
+            }
+
+            return false;
         }
 
         private readonly int _numRows;
