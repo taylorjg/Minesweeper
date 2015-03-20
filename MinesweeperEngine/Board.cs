@@ -13,9 +13,22 @@ namespace MinesweeperEngine
 
         private Board(int numRows, int numCols, IEnumerable<Coords> mines)
         {
-            _numRows = numRows;
-            _numCols = numCols;
-            _squareData = mines.ToDictionary(coords => coords, coords => new SquareData {IsMine = true});
+            _squareData = new SquareData[numRows, numCols];
+
+            foreach (var coords in AllCoords)
+            {
+                _squareData[coords.Row, coords.Col] = new SquareData{IsMine = mines.Contains(coords)};
+            }
+        }
+
+        public int NumRows
+        {
+            get { return _squareData.GetLength(0); }
+        }
+
+        public int NumCols
+        {
+            get { return _squareData.GetLength(1); }
         }
 
         public void Uncover(Coords coords)
@@ -32,32 +45,16 @@ namespace MinesweeperEngine
         {
             get
             {
-                Func<SquareData, bool> isInBadState = sd => sd.IsMine == sd.IsUncovered;
-
-                foreach (var coords in AllCoords)
-                {
-                    SquareData squareData;
-                    if (!_squareData.TryGetValue(coords, out squareData)) return false;
-                    if (isInBadState(squareData)) return false;
-                }
-
-                return true;
+                Func<SquareData, bool> isIncomplete = sd => sd.IsMine == sd.IsUncovered;
+                return !AllCoords.Any(coords => isIncomplete(CoordsToSquareData(coords)));
             }
         }
 
         public bool IsDetonated {
             get
             {
-                Func<SquareData, bool> isDetonatedSquare = sd => sd.IsMine && sd.IsUncovered;
-
-                foreach (var coords in AllCoords)
-                {
-                    SquareData squareData;
-                    if (!_squareData.TryGetValue(coords, out squareData)) continue;
-                    if (isDetonatedSquare(squareData)) return true;
-                }
-
-                return false;
+                Func<SquareData, bool> isDetonated = sd => sd.IsMine && sd.IsUncovered;
+                return AllCoords.Any(coords => isDetonated(CoordsToSquareData(coords)));
             }
         }
 
@@ -76,8 +73,8 @@ namespace MinesweeperEngine
             return
                 from row in Enumerable.Range(coords.Row - 1, 3)
                 from col in Enumerable.Range(coords.Col - 1, 3)
-                where row >= 0 && row < _numRows
-                where col >= 0 && col < _numCols
+                where row >= 0 && row < NumRows
+                where col >= 0 && col < NumCols
                 let neighbourCoords = new Coords(row, col)
                 where !neighbourCoords.Equals(coords)
                 select neighbourCoords;
@@ -88,70 +85,50 @@ namespace MinesweeperEngine
             get
             {
                 return
-                    from row in Enumerable.Range(0, _numRows)
-                    from col in Enumerable.Range(0, _numCols)
+                    from row in Enumerable.Range(0, NumRows)
+                    from col in Enumerable.Range(0, NumCols)
                     select new Coords(row, col);
             }
         }
 
         private bool UncoverSquare(Coords coords)
         {
-            return DoSquareDataFunc(coords, squareData =>
+            var squareData = CoordsToSquareData(coords);
+
+            if (squareData.IsUncovered) return true;
+
+            squareData.IsUncovered = true;
+
+            if (squareData.NumNeighouringMines == null)
             {
-                if (squareData.IsUncovered) return true;
+                var numNeighouringMines = 0;
+                ForEachNeighbour(coords, neighbourCoords => numNeighouringMines += IsMineAt(neighbourCoords) ? 1 : 0);
+                squareData.NumNeighouringMines = numNeighouringMines;
+            }
 
-                squareData.IsUncovered = true;
+            if (squareData.NumNeighouringMines.Value == 0)
+            {
+                UncoverNeighbours(coords);
+            }
 
-                if (squareData.NumNeighouringMines == null)
-                {
-                    var numNeighouringMines = 0;
-                    ForEachNeighbour(coords, neighbourCoords => numNeighouringMines += IsMine(neighbourCoords) ? 1 : 0);
-                    squareData.NumNeighouringMines = numNeighouringMines;
-                }
-
-                if (squareData.NumNeighouringMines.Value == 0)
-                {
-                    UncoverNeighbours(coords);
-                }
-
-                return false;
-            });
+            return false;
         }
 
         private void FlagSquare(Coords coords)
         {
-            DoSquareDataAction(coords, squareData => squareData.IsFlagged = true);
+            CoordsToSquareData(coords).IsFlagged = true;
         }
 
-        private void DoSquareDataAction(Coords coords, Action<SquareData> action)
+        private bool IsMineAt(Coords coords)
         {
-            DoSquareDataFunc(coords, squareData =>
-            {
-                action(squareData);
-                return 0;
-            });
+            return CoordsToSquareData(coords).IsMine;
         }
 
-        private T DoSquareDataFunc<T>(Coords coords, Func<SquareData, T> func)
+        private SquareData CoordsToSquareData(Coords coords)
         {
-            SquareData squareData;
-
-            if (!_squareData.TryGetValue(coords, out squareData))
-            {
-                _squareData[coords] = squareData = new SquareData();
-            }
-
-            return func(squareData);
+            return _squareData[coords.Row, coords.Col];
         }
 
-        private bool IsMine(Coords coords)
-        {
-            SquareData squareData;
-            return (_squareData.TryGetValue(coords, out squareData)) && squareData.IsMine;
-        }
-
-        private readonly int _numRows;
-        private readonly int _numCols;
-        private readonly IDictionary<Coords, SquareData> _squareData;
+        private readonly SquareData[,] _squareData;
     }
 }
