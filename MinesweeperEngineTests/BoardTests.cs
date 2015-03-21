@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using MinesweeperEngine;
+﻿using MinesweeperEngine;
 using NUnit.Framework;
 
 namespace MinesweeperEngineTests
@@ -10,21 +9,21 @@ namespace MinesweeperEngineTests
         [Test]
         public void BoardIsInitiallyNotCleared()
         {
-            var board = Board.Create(2, 2, Enumerable.Empty<Coords>());
+            var board = Board.Create(2, 2, new Coords[] {});
             Assert.That(board.IsCleared, Is.False, "Expected board not to be cleared");
         }
 
         [Test]
         public void BoardIsInitiallyNotDetonated()
         {
-            var board = Board.Create(2, 2, Enumerable.Empty<Coords>());
+            var board = Board.Create(2, 2, new Coords[] {});
             Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");
         }
 
         [Test]
         public void UncoveringSquareOnBoardWithOneSquareAndNoMinesIsCleared()
         {
-            var board = Board.Create(1, 1, Enumerable.Empty<Coords>());
+            var board = Board.Create(1, 1, new Coords[] {});
             board.Uncover(new Coords(0, 0));
             Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
             Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");
@@ -33,7 +32,7 @@ namespace MinesweeperEngineTests
         [Test]
         public void UncoveringSquareOnBoardWithTwoSquaresAndNoMinesIsCleared()
         {
-            var board = Board.Create(1, 2, Enumerable.Empty<Coords>());
+            var board = Board.Create(1, 2, new Coords[] {});
             board.Uncover(new Coords(0, 0));
             Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
             Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");
@@ -42,7 +41,7 @@ namespace MinesweeperEngineTests
         [Test]
         public void UncoveringSquareOnBoardWithLotsOfSquaresAndNoMinesIsCleared()
         {
-            var board = Board.Create(5, 5, Enumerable.Empty<Coords>());
+            var board = Board.Create(5, 5, new Coords[] {});
             board.Uncover(new Coords(0, 0));
             Assert.That(board.IsCleared, Is.True, "Expected board to be cleared");
             Assert.That(board.IsDetonated, Is.False, "Expected board not to be detonated");

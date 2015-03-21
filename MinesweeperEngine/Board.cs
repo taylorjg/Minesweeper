@@ -6,12 +6,12 @@ namespace MinesweeperEngine
 {
     public class Board
     {
-        public static Board Create(int numRows, int numCols, IEnumerable<Coords> mines)
+        public static Board Create(int numRows, int numCols, IReadOnlyCollection<Coords> mines)
         {
             return new Board(numRows, numCols, mines);
         }
 
-        private Board(int numRows, int numCols, IEnumerable<Coords> mines)
+        private Board(int numRows, int numCols, IReadOnlyCollection<Coords> mines)
         {
             _squareData = new SquareData[numRows, numCols];
 
