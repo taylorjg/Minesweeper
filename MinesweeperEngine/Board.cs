@@ -45,8 +45,8 @@ namespace MinesweeperEngine
         {
             get
             {
-                Func<SquareData, bool> isIncomplete = sd => sd.IsMine == sd.IsUncovered;
-                return !AllCoords.Any(coords => isIncomplete(CoordsToSquareData(coords)));
+                Func<SquareData, bool> isBad = sd => sd.IsMine == sd.IsUncovered;
+                return !AllCoords.Any(coords => isBad(CoordsToSquareData(coords)));
             }
         }
 
@@ -60,7 +60,8 @@ namespace MinesweeperEngine
 
         private void UncoverNeighbours(Coords coords)
         {
-            ForEachNeighbour(coords, neighbourCoords => UncoverSquare(neighbourCoords));
+            if (NumNeighouringMines(coords) > 0) return;
+            ForEachNeighbour(coords, UncoverSquare);
         }
 
         private void ForEachNeighbour(Coords coords, Action<Coords> action)
@@ -91,27 +92,12 @@ namespace MinesweeperEngine
             }
         }
 
-        private bool UncoverSquare(Coords coords)
+        private void UncoverSquare(Coords coords)
         {
             var squareData = CoordsToSquareData(coords);
-
-            if (squareData.IsUncovered) return true;
-
+            if (squareData.IsUncovered) return;
             squareData.IsUncovered = true;
-
-            if (squareData.NumNeighouringMines == null)
-            {
-                var numNeighouringMines = 0;
-                ForEachNeighbour(coords, neighbourCoords => numNeighouringMines += IsMineAt(neighbourCoords) ? 1 : 0);
-                squareData.NumNeighouringMines = numNeighouringMines;
-            }
-
-            if (squareData.NumNeighouringMines.Value == 0)
-            {
-                UncoverNeighbours(coords);
-            }
-
-            return false;
+            UncoverNeighbours(coords);
         }
 
         private void FlagSquare(Coords coords)
@@ -122,6 +108,20 @@ namespace MinesweeperEngine
         private bool IsMineAt(Coords coords)
         {
             return CoordsToSquareData(coords).IsMine;
+        }
+
+        private int NumNeighouringMines(Coords coords)
+        {
+            var squareData = CoordsToSquareData(coords);
+
+            if (squareData.NumNeighouringMines == null)
+            {
+                squareData.NumNeighouringMines = NeighbourCoords(coords).Aggregate(
+                    0,
+                    (acc, neighbourCoords) => IsMineAt(neighbourCoords) ? 1 : 0 + acc);
+            }
+
+            return squareData.NumNeighouringMines.Value;
         }
 
         private SquareData CoordsToSquareData(Coords coords)
