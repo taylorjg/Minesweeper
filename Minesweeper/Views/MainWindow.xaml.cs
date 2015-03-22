@@ -16,7 +16,9 @@ namespace Minesweeper.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new BoardViewModel(Board.Create(NumRows, NumCols, new []{new Coords(0, 0)}));
+            //DataContext = new BoardViewModel(Board.Create(NumRows, NumCols, new []{new Coords(0, 0)}));
+            var mines = new MineLocationGenerator().GenerateMineLocations(NumRows, NumCols, 10);
+            DataContext = new BoardViewModel(Board.Create(NumRows, NumCols, mines));
             Loaded += (_, __) => InitialiseBoardGrid();
         }
 
