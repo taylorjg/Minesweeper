@@ -108,7 +108,8 @@ namespace MinesweeperEngine
 
         private void FlagSquareInternal(Coords coords)
         {
-            CoordsToSquareData(coords).IsFlagged = true;
+            var squareData = CoordsToSquareData(coords);
+            squareData.IsFlagged = !squareData.IsFlagged;
         }
 
         private bool IsMineAt(Coords coords)

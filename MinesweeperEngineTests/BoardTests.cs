@@ -86,5 +86,16 @@ namespace MinesweeperEngineTests
             Assert.That(board[new Coords(1, 0)].NumNeighouringMines, Is.Null, "Expected other squares to have not calculated neighbouring mines");
             Assert.That(board[new Coords(1, 1)].NumNeighouringMines, Is.Null, "Expected other squares to have not calculated neighbouring mines");
         }
+
+        [Test]
+        public void CanUnflagASquare()
+        {
+            var coords = new Coords(0, 0);
+            var board = Board.Create(1, 1, new[] { coords });
+            board.FlagSquare(coords);
+            Assert.That(board[coords].IsFlagged, Is.True, "Expected square to be flagged now");
+            board.FlagSquare(coords);
+            Assert.That(board[coords].IsFlagged, Is.False, "Expected square to be unflagged now");
+        }
     }
 }
