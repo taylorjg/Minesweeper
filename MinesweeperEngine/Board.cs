@@ -58,6 +58,11 @@ namespace MinesweeperEngine
             }
         }
 
+        public SquareData this[Coords coords]
+        {
+            get { return CoordsToSquareData(coords); }
+        }
+
         private void UncoverNeighbours(Coords coords)
         {
             if (NumNeighouringMines(coords) > 0) return;
