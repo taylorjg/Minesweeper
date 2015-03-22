@@ -97,5 +97,44 @@ namespace MinesweeperEngineTests
             board.FlagSquare(coords);
             Assert.That(board[coords].IsFlagged, Is.False, "Expected square to be unflagged now");
         }
+
+        [Test]
+        public void CountOfUnflaggedMinesIsInitiallyEqualToTheNumberOfMines()
+        {
+            var board = Board.Create(2, 2, new[] { new Coords(0, 0) });
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(1), "Incorrect UnflaggedMineCount");
+        }
+
+        [Test]
+        public void CountOfUnflaggedMinesIsDecrementedAfterFlaggingASquare()
+        {
+            var board = Board.Create(2, 2, new[] { new Coords(0, 0) });
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(1), "Incorrect UnflaggedMineCount");
+            board.FlagSquare(new Coords(0, 0));
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(0), "Incorrect UnflaggedMineCount");
+        }
+
+        [Test]
+        public void CountOfUnflaggedMinesIsIncrementedAfterUnflaggingASquare()
+        {
+            var coords = new Coords(0, 0);
+            var board = Board.Create(2, 2, new[] { coords });
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(1), "Incorrect UnflaggedMineCount");
+            board.FlagSquare(coords);
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(0), "Incorrect UnflaggedMineCount");
+            board.FlagSquare(coords);
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(1), "Incorrect UnflaggedMineCount");
+        }
+
+        [Test]
+        public void CountOfUnflaggedMinesCanGoNegative()
+        {
+            var board = Board.Create(2, 2, new[] { new Coords(0, 0) });
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(1), "Incorrect UnflaggedMineCount");
+            board.FlagSquare(new Coords(0, 0));
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(0), "Incorrect UnflaggedMineCount");
+            board.FlagSquare(new Coords(1, 0));
+            Assert.That(board.UnflaggedMineCount, Is.EqualTo(-1), "Incorrect UnflaggedMineCount");
+        }
     }
 }

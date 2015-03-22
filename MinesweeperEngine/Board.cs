@@ -63,6 +63,15 @@ namespace MinesweeperEngine
             get { return CoordsToSquareData(coords); }
         }
 
+        public int UnflaggedMineCount {
+            get
+            {
+                var numTotalMines = AllCoords.Sum(coords => CoordsToSquareData(coords).IsMine ? 1 : 0);
+                var numFlaggedSquares = AllCoords.Sum(coords => CoordsToSquareData(coords).IsFlagged ? 1 : 0);
+                return numTotalMines - numFlaggedSquares;
+            }
+        }
+
         private void UncoverNeighbours(Coords coords)
         {
             if (NumNeighouringMines(coords) > 0) return;
