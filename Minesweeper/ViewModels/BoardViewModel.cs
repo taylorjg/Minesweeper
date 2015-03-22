@@ -8,8 +8,6 @@ namespace Minesweeper.ViewModels
 {
     public class BoardViewModel : INotifyPropertyChanged
     {
-        private readonly Board _board;
-
         public BoardViewModel(Board board)
         {
             _board = board;
@@ -27,10 +25,9 @@ namespace Minesweeper.ViewModels
         {
             _board.FlagSquare(coords);
             OnPropertyChanged(Binding.IndexerName);
-            //OnPropertyChanged("NumUnflaggedMines");
+            OnPropertyChanged("UnflaggedMineCount");
         }
 
-        //public Tuple<SquareState, int> this[int row, int col]
         public string this[int row, int col]
         {
             get
@@ -41,12 +38,10 @@ namespace Minesweeper.ViewModels
             }
         }
 
-        //public int NumUnflaggedMines {
-        //    get
-        //    {
-        //        return 0;
-        //    }
-        //}
+        public int UnflaggedMineCount
+        {
+            get { return _board.UnflaggedMineCount; }
+        }
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -54,5 +49,7 @@ namespace Minesweeper.ViewModels
             var handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private readonly Board _board;
     }
 }
