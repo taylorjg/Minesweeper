@@ -24,7 +24,7 @@ namespace Minesweeper.ViewModels
             }
             else if (squareData.IsFlagged)
             {
-                squareState = (squareData.IsMine) ? SquareState.Exploded : SquareState.Flagged;
+                squareState = SquareState.Flagged;
             }
 
             return squareState;

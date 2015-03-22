@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using Minesweeper.ViewModels;
 using MinesweeperEngine;
 
@@ -48,6 +49,7 @@ namespace Minesweeper.Views
                     squareButton.SetValue(Grid.RowProperty, row);
                     squareButton.SetValue(Grid.ColumnProperty, col);
                     squareButton.Click += SquareButtonOnClick;
+                    squareButton.MouseRightButtonUp += SquareButtonOnMouseRightButtonUp;
                     squareButton.Tag = new Coords(row, col);
                     var path = string.Format("[{0},{1}]", row, col);
                     var binding = new Binding(path);
@@ -63,6 +65,14 @@ namespace Minesweeper.Views
             var coords = (Coords) button.Tag;
             var boardViewModel = (BoardViewModel) DataContext;
             boardViewModel.UncoverSquare(coords);
+        }
+
+        private void SquareButtonOnMouseRightButtonUp(object sender, MouseButtonEventArgs _)
+        {
+            var button = (Button) sender;
+            var coords = (Coords) button.Tag;
+            var boardViewModel = (BoardViewModel) DataContext;
+            boardViewModel.FlagSquare(coords);
         }
     }
 }
