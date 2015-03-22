@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using Minesweeper.Annotations;
@@ -20,13 +19,13 @@ namespace Minesweeper.ViewModels
 
         public void UncoverSquare(Coords coords)
         {
-            _board.Uncover(coords);
+            _board.UncoverSquare(coords);
             OnPropertyChanged(Binding.IndexerName);
         }
 
         public void FlagSquare(Coords coords)
         {
-            _board.Flag(coords);
+            _board.FlagSquare(coords);
             OnPropertyChanged(Binding.IndexerName);
             //OnPropertyChanged("NumUnflaggedMines");
         }

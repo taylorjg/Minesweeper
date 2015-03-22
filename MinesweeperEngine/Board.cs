@@ -31,14 +31,14 @@ namespace MinesweeperEngine
             get { return _squareData.GetLength(1); }
         }
 
-        public void Uncover(Coords coords)
+        public void UncoverSquare(Coords coords)
         {
-            UncoverSquare(coords);
+            UncoverSquareInternal(coords);
         }
 
-        public void Flag(Coords coords)
+        public void FlagSquare(Coords coords)
         {
-            FlagSquare(coords);
+            FlagSquareInternal(coords);
         }
 
         public bool IsCleared
@@ -66,7 +66,7 @@ namespace MinesweeperEngine
         private void UncoverNeighbours(Coords coords)
         {
             if (NumNeighouringMines(coords) > 0) return;
-            ForEachNeighbour(coords, UncoverSquare);
+            ForEachNeighbour(coords, UncoverSquareInternal);
         }
 
         private void ForEachNeighbour(Coords coords, Action<Coords> action)
@@ -97,15 +97,16 @@ namespace MinesweeperEngine
             }
         }
 
-        private void UncoverSquare(Coords coords)
+        private void UncoverSquareInternal(Coords coords)
         {
             var squareData = CoordsToSquareData(coords);
             if (squareData.IsUncovered) return;
             squareData.IsUncovered = true;
+            if (squareData.IsMine) return;
             UncoverNeighbours(coords);
         }
 
-        private void FlagSquare(Coords coords)
+        private void FlagSquareInternal(Coords coords)
         {
             CoordsToSquareData(coords).IsFlagged = true;
         }
