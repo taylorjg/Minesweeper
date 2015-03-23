@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using Minesweeper.Annotations;
@@ -30,22 +29,11 @@ namespace Minesweeper.ViewModels
             OnPropertyChanged("UnflaggedMineCount");
         }
 
-        //public string this[int row, int col]
-        //{
-        //    get
-        //    {
-        //        var coords = new Coords(row, col);
-        //        var squareData = _board[coords];
-        //        return SquareDataMapper.MapSquareDataToString(squareData);
-        //    }
-        //}
-
         public SquareViewModel this[int row, int col]
         {
             get
             {
                 var coords = new Coords(row, col);
-                Debug.WriteLine("BoardViewModel.this[{0},{1}]", row, col);
                 var squareData = _board[coords];
                 return SquareDataMapper.MapSquareDataToSquareViewModel(squareData);
             }

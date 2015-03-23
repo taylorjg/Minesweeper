@@ -20,6 +20,17 @@ namespace Minesweeper.Views
             DataContext = new BoardViewModel(Board.Create(NumRows, NumCols, mines));
             //Loaded += (_, __) => InitialiseBoardGrid();
             InitialiseBoardGrid();
+            NewGameMenuItem.Click += NewGameMenuItemOnClick;
+            ExitMenuItem.Click += ExitMenuItemOnClick;
+        }
+
+        private void NewGameMenuItemOnClick(object _, RoutedEventArgs __)
+        {
+        }
+
+        private void ExitMenuItemOnClick(object _, RoutedEventArgs __)
+        {
+            Close();
         }
 
         public void InitialiseBoardGrid()
