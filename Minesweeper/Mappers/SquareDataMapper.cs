@@ -1,7 +1,8 @@
 using System;
+using Minesweeper.ViewModels;
 using MinesweeperEngine;
 
-namespace Minesweeper.ViewModels
+namespace Minesweeper.Mappers
 {
     public static class SquareDataMapper
     {
@@ -30,10 +31,20 @@ namespace Minesweeper.ViewModels
             return squareState;
         }
 
-        public static string MapSquareData(SquareData squareData)
+        public static string MapSquareDataToString(SquareData squareData)
         {
             var squareState = MapSquareDataToSquareState(squareData);
+            return MapSquareStateToString(squareState, squareData.NumNeighouringMines);
+        }
 
+        public static SquareViewModel MapSquareDataToSquareViewModel(SquareData squareData)
+        {
+            var squareState = MapSquareDataToSquareState(squareData);
+            return new SquareViewModel(squareState, squareData.NumNeighouringMines ?? -1, squareData.IsMine);
+        }
+
+        public static string MapSquareStateToString(SquareState squareState, int? numNeighouringMines)
+        {
             switch (squareState)
             {
                 case SquareState.Covered:
@@ -43,7 +54,7 @@ namespace Minesweeper.ViewModels
                     return "-";
 
                 case SquareState.UncoveredWithSurroundingMines:
-                    return squareData.NumNeighouringMines.HasValue ? Convert.ToString(squareData.NumNeighouringMines.Value) : "?";
+                    return numNeighouringMines.HasValue ? Convert.ToString(numNeighouringMines.Value) : "?";
 
                 case SquareState.Flagged:
                     return "F";
@@ -55,12 +66,5 @@ namespace Minesweeper.ViewModels
                     return "?";
             }
         }
-
-        // public static Tuple<SquareState, int> MapSquareData(SquareData squareData)
-        // {
-        //     var squareState = MapSquareDataToSquareState(squareData);
-        //     var numSurroundingMines = squareData.NumNeighouringMines ?? -1;
-        //     return Tuple.Create(squareState, numSurroundingMines);
-        // }
     }
 }

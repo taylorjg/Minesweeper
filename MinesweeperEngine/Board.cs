@@ -132,9 +132,8 @@ namespace MinesweeperEngine
 
             if (squareData.NumNeighouringMines == null)
             {
-                squareData.NumNeighouringMines = NeighbourCoords(coords).Aggregate(
-                    0,
-                    (acc, neighbourCoords) => IsMineAt(neighbourCoords) ? 1 : 0 + acc);
+                Func<Coords, int> f = c => IsMineAt(c) ? 1 : 0;
+                squareData.NumNeighouringMines = NeighbourCoords(coords).Sum(f);
             }
 
             return squareData.NumNeighouringMines.Value;

@@ -16,10 +16,10 @@ namespace Minesweeper.Views
         public MainWindow()
         {
             InitializeComponent();
-            //DataContext = new BoardViewModel(Board.Create(NumRows, NumCols, new []{new Coords(0, 0)}));
             var mines = new MineLocationGenerator().GenerateMineLocations(NumRows, NumCols, 10);
             DataContext = new BoardViewModel(Board.Create(NumRows, NumCols, mines));
-            Loaded += (_, __) => InitialiseBoardGrid();
+            //Loaded += (_, __) => InitialiseBoardGrid();
+            InitialiseBoardGrid();
         }
 
         public void InitialiseBoardGrid()
@@ -28,34 +28,25 @@ namespace Minesweeper.Views
             BoardGrid.ColumnDefinitions.Clear();
             BoardGrid.Children.Clear();
 
-            foreach (var rowDefinition in Enumerable.Range(0, NumRows)
-                .Select(_ => new RowDefinition {Height = new GridLength(0, GridUnitType.Auto)}))
-            {
-                BoardGrid.RowDefinitions.Add(rowDefinition);
-            }
-
-            foreach (var columnDefinition in Enumerable.Range(0, NumCols)
-                .Select(_ => new ColumnDefinition {Width = new GridLength(0, GridUnitType.Auto)}))
-            {
-                BoardGrid.ColumnDefinitions.Add(columnDefinition);
-            }
-
-            var squareWidth = BoardGrid.ActualWidth / NumRows;
-            var squareHeight = BoardGrid.ActualHeight / NumCols;
+            foreach (var _ in Enumerable.Range(0, NumRows)) BoardGrid.RowDefinitions.Add(new RowDefinition());
+            foreach (var _ in Enumerable.Range(0, NumCols)) BoardGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
             foreach (var row in Enumerable.Range(0, NumRows))
             {
                 foreach (var col in Enumerable.Range(0, NumCols))
                 {
-                    var squareButton = new Button { Width = squareWidth, Height = squareHeight };
+                    var squareButton = new Button();
                     squareButton.SetValue(Grid.RowProperty, row);
                     squareButton.SetValue(Grid.ColumnProperty, col);
                     squareButton.Click += SquareButtonOnClick;
                     squareButton.MouseRightButtonUp += SquareButtonOnMouseRightButtonUp;
                     squareButton.Tag = new Coords(row, col);
-                    var path = string.Format("[{0},{1}]", row, col);
-                    var binding = new Binding(path);
-                    squareButton.SetBinding(ContentProperty, binding);
+                    var contentPath = string.Format("[{0},{1}].DisplayText", row, col);
+                    var contentBinding = new Binding(contentPath);
+                    squareButton.SetBinding(ContentProperty, contentBinding);
+                    var backgroundPath = string.Format("[{0},{1}].Color", row, col);
+                    var backgroundBinding = new Binding(backgroundPath);
+                    squareButton.SetBinding(BackgroundProperty, backgroundBinding);
                     BoardGrid.Children.Add(squareButton);
                 }
             }

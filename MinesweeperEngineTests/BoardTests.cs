@@ -136,5 +136,22 @@ namespace MinesweeperEngineTests
             board.FlagSquare(new Coords(1, 0));
             Assert.That(board.UnflaggedMineCount, Is.EqualTo(-1), "Incorrect UnflaggedMineCount");
         }
+
+        [Test]
+        public void UncoveringASquareCalculatesCountOfSurroundingMinesCorrectly()
+        {
+            var board = Board.Create(3, 3, new[] {new Coords(0, 0), new Coords(0, 1), new Coords(0, 2)});
+            var coords = new Coords(1, 1);
+            board.UncoverSquare(coords);
+            var squareData = board[coords];
+            if (squareData.NumNeighouringMines.HasValue)
+            {
+                Assert.That(squareData.NumNeighouringMines.Value, Is.EqualTo(3));
+            }
+            else
+            {
+                Assert.Fail("Expected squareData.NumNeighouringMines to not be null");
+            }
+        }
     }
 }
