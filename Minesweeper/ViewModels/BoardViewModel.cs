@@ -1,36 +1,34 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Data;
-using Minesweeper.Annotations;
+using GalaSoft.MvvmLight;
 using Minesweeper.Mappers;
 using MinesweeperEngine;
 
 namespace Minesweeper.ViewModels
 {
-    public class BoardViewModel : INotifyPropertyChanged
+    public class BoardViewModel : ViewModelBase
     {
         public BoardViewModel(Board board)
         {
             _board = board;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler YouWon;
         public event EventHandler YouLost;
 
         public void UncoverSquare(Coords coords)
         {
             _board.UncoverSquare(coords);
-            OnPropertyChanged(Binding.IndexerName);
+            RaisePropertyChangedForIndexer();
             CheckForEndOfGame();
         }
 
         public void FlagSquare(Coords coords)
         {
             _board.FlagSquare(coords);
-            OnPropertyChanged(Binding.IndexerName);
-            OnPropertyChanged("UnflaggedMineCount");
+            RaisePropertyChangedForIndexer();
+            RaisePropertyChanged(() => UnflaggedMineCount);
             CheckForEndOfGame();
         }
 
@@ -49,13 +47,6 @@ namespace Minesweeper.ViewModels
             get { return _board.UnflaggedMineCount; }
         }
 
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         private void CheckForEndOfGame()
         {
             ConditionallyRaiseEvent(YouWon, _board.IsCleared);
@@ -66,6 +57,12 @@ namespace Minesweeper.ViewModels
         {
             if (!condition || eventHandler == null) return;
             eventHandler.Invoke(this, EventArgs.Empty);
+        }
+
+        private void RaisePropertyChangedForIndexer()
+        {
+            var handler = PropertyChangedHandler;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(Binding.IndexerName));
         }
 
         private readonly Board _board;

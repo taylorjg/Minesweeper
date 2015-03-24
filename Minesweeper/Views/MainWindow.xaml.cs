@@ -33,7 +33,7 @@ namespace Minesweeper.Views
             InitialiseBoardGrid();
         }
 
-        public void InitialiseBoardGrid()
+        private void InitialiseBoardGrid()
         {
             BoardGrid.RowDefinitions.Clear();
             BoardGrid.ColumnDefinitions.Clear();
