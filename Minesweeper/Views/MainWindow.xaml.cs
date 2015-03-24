@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,31 +17,27 @@ namespace Minesweeper.Views
         public MainWindow()
         {
             InitializeComponent();
-            var mines = new MineLocationGenerator().GenerateMineLocations(NumRows, NumCols, 10);
-            DataContext = new BoardViewModel(Board.Create(NumRows, NumCols, mines));
-            //Loaded += (_, __) => InitialiseBoardGrid();
             InitialiseBoardGrid();
             NewGameMenuItem.Click += NewGameMenuItemOnClick;
             ExitMenuItem.Click += ExitMenuItemOnClick;
         }
 
-        private void NewGameMenuItemOnClick(object _, RoutedEventArgs __)
-        {
-        }
-
-        private void ExitMenuItemOnClick(object _, RoutedEventArgs __)
-        {
-            Close();
-        }
-
         public void InitialiseBoardGrid()
         {
+            var mines = new MineLocationGenerator().GenerateMineLocations(NumRows, NumCols, 10);
+            var boardViewModel = new BoardViewModel(Board.Create(NumRows, NumCols, mines));
+            boardViewModel.YouWon += OnYouWon;
+            boardViewModel.YouLost += OnYouLost;
+            DataContext = boardViewModel;
+
             BoardGrid.RowDefinitions.Clear();
             BoardGrid.ColumnDefinitions.Clear();
             BoardGrid.Children.Clear();
 
+            // ReSharper disable UnusedVariable
             foreach (var _ in Enumerable.Range(0, NumRows)) BoardGrid.RowDefinitions.Add(new RowDefinition());
             foreach (var _ in Enumerable.Range(0, NumCols)) BoardGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            // ReSharper restore UnusedVariable
 
             foreach (var row in Enumerable.Range(0, NumRows))
             {
@@ -77,6 +74,26 @@ namespace Minesweeper.Views
             var coords = (Coords) button.Tag;
             var boardViewModel = (BoardViewModel) DataContext;
             boardViewModel.FlagSquare(coords);
+        }
+
+        private void NewGameMenuItemOnClick(object _, RoutedEventArgs __)
+        {
+            InitialiseBoardGrid();
+        }
+
+        private void ExitMenuItemOnClick(object _, RoutedEventArgs __)
+        {
+            Close();
+        }
+
+        private void OnYouLost(object sender, EventArgs eventArgs)
+        {
+            InitialiseBoardGrid();
+        }
+
+        private void OnYouWon(object sender, EventArgs eventArgs)
+        {
+            InitialiseBoardGrid();
         }
     }
 }

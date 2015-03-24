@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using Minesweeper.Annotations;
@@ -15,11 +16,14 @@ namespace Minesweeper.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler YouWon;
+        public event EventHandler YouLost;
 
         public void UncoverSquare(Coords coords)
         {
             _board.UncoverSquare(coords);
             OnPropertyChanged(Binding.IndexerName);
+            CheckForEndOfGame();
         }
 
         public void FlagSquare(Coords coords)
@@ -27,6 +31,7 @@ namespace Minesweeper.ViewModels
             _board.FlagSquare(coords);
             OnPropertyChanged(Binding.IndexerName);
             OnPropertyChanged("UnflaggedMineCount");
+            CheckForEndOfGame();
         }
 
         public SquareViewModel this[int row, int col]
@@ -49,6 +54,18 @@ namespace Minesweeper.ViewModels
         {
             var handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void CheckForEndOfGame()
+        {
+            ConditionallyRaiseEvent(YouWon, _board.IsCleared);
+            ConditionallyRaiseEvent(YouLost, _board.IsDetonated);
+        }
+
+        private void ConditionallyRaiseEvent(EventHandler eventHandler, bool condition)
+        {
+            if (!condition || eventHandler == null) return;
+            eventHandler.Invoke(this, EventArgs.Empty);
         }
 
         private readonly Board _board;
