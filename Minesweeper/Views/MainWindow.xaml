@@ -7,6 +7,11 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         >
+
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Control" Command="{Binding Path=NewGameCommand}" />
+        <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding Path=ExitCommand}" />
+    </Window.InputBindings>
     
     <Grid>
         <Grid.RowDefinitions>
@@ -17,9 +22,9 @@
 
         <Menu Grid.Row="0">
             <MenuItem Header="_File">
-                <MenuItem Header="_New Game" InputGestureText="Ctrl+N" x:Name="NewGameMenuItem"></MenuItem>
+                <MenuItem Header="_New Game" InputGestureText="Ctrl+N" Command="{Binding Path=NewGameCommand}" />
                 <Separator />
-                <MenuItem Header="E_xit" InputGestureText="Alt+F4" x:Name="ExitMenuItem"></MenuItem>
+                <MenuItem Header="E_xit" InputGestureText="Alt+F4" Command="{Binding Path=ExitCommand}" />
             </MenuItem>
         </Menu>
         

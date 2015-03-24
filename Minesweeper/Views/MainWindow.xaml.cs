@@ -18,8 +18,6 @@ namespace Minesweeper.Views
         public MainWindow()
         {
             InitializeComponent();
-            NewGameMenuItem.Click += NewGameMenuItemOnClick;
-            ExitMenuItem.Click += ExitMenuItemOnClick;
             StartNewGame();
         }
 
@@ -27,6 +25,8 @@ namespace Minesweeper.Views
         {
             var mines = new MineLocationGenerator().GenerateMineLocations(NumRows, NumCols, NumMines);
             var boardViewModel = new BoardViewModel(Board.Create(NumRows, NumCols, mines));
+            boardViewModel.NewGame += OnNewGame;
+            boardViewModel.Exit += OnExit;
             boardViewModel.YouWon += OnYouWon;
             boardViewModel.YouLost += OnYouLost;
             DataContext = boardViewModel;
@@ -81,12 +81,12 @@ namespace Minesweeper.Views
             boardViewModel.FlagSquare(coords);
         }
 
-        private void NewGameMenuItemOnClick(object _, RoutedEventArgs __)
+        private void OnNewGame(object _, EventArgs __)
         {
             StartNewGame();
         }
 
-        private void ExitMenuItemOnClick(object _, RoutedEventArgs __)
+        private void OnExit(object _, EventArgs __)
         {
             Close();
         }

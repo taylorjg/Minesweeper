@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using Minesweeper.Mappers;
 using MinesweeperEngine;
 
@@ -14,6 +16,8 @@ namespace Minesweeper.ViewModels
             _board = board;
         }
 
+        public event EventHandler NewGame;
+        public event EventHandler Exit;
         public event EventHandler YouWon;
         public event EventHandler YouLost;
 
@@ -47,6 +51,16 @@ namespace Minesweeper.ViewModels
             get { return _board.UnflaggedMineCount; }
         }
 
+        public ICommand NewGameCommand
+        {
+            get { return _newGameCommand ?? (_newGameCommand = new RelayCommand(OnNewGame)); }
+        }
+
+        public ICommand ExitCommand
+        {
+            get { return _exitCommand ?? (_exitCommand = new RelayCommand(OnExit)); }
+        }
+
         private void CheckForEndOfGame()
         {
             ConditionallyRaiseEvent(YouWon, _board.IsCleared);
@@ -65,6 +79,18 @@ namespace Minesweeper.ViewModels
             if (handler != null) handler(this, new PropertyChangedEventArgs(Binding.IndexerName));
         }
 
+        private void OnNewGame()
+        {
+            ConditionallyRaiseEvent(NewGame, true);
+        }
+
+        private void OnExit()
+        {
+            ConditionallyRaiseEvent(Exit, true);
+        }
+
         private readonly Board _board;
+        private RelayCommand _newGameCommand;
+        private RelayCommand _exitCommand;
     }
 }
