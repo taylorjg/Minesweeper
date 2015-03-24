@@ -105,8 +105,8 @@ namespace Minesweeper.Views
 
         private void ShowMyMessageBox(string messageText)
         {
-            var myMessageBox = new MyMessageBox { Owner = this, MessageText = messageText };
-            myMessageBox.ShowDialog();
+            var messageBox = new MessageBox { Owner = this, MessageText = messageText };
+            messageBox.ShowDialog();
         }
     }
 }

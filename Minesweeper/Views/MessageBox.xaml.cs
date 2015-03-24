@@ -1,8 +1,8 @@
 ﻿namespace Minesweeper.Views
 {
-    public partial class MyMessageBox
+    public partial class MessageBox
     {
-        public MyMessageBox()
+        public MessageBox()
         {
             InitializeComponent();
             DataContext = this;
