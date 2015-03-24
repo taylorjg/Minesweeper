@@ -13,23 +13,28 @@ namespace Minesweeper.Views
     {
         private const int NumRows = 10;
         private const int NumCols = 10;
+        private const int NumMines = 10;
 
         public MainWindow()
         {
             InitializeComponent();
-            InitialiseBoardGrid();
             NewGameMenuItem.Click += NewGameMenuItemOnClick;
             ExitMenuItem.Click += ExitMenuItemOnClick;
+            StartNewGame();
         }
 
-        public void InitialiseBoardGrid()
+        public void StartNewGame()
         {
-            var mines = new MineLocationGenerator().GenerateMineLocations(NumRows, NumCols, 10);
+            var mines = new MineLocationGenerator().GenerateMineLocations(NumRows, NumCols, NumMines);
             var boardViewModel = new BoardViewModel(Board.Create(NumRows, NumCols, mines));
             boardViewModel.YouWon += OnYouWon;
             boardViewModel.YouLost += OnYouLost;
             DataContext = boardViewModel;
+            InitialiseBoardGrid();
+        }
 
+        public void InitialiseBoardGrid()
+        {
             BoardGrid.RowDefinitions.Clear();
             BoardGrid.ColumnDefinitions.Clear();
             BoardGrid.Children.Clear();
@@ -78,7 +83,7 @@ namespace Minesweeper.Views
 
         private void NewGameMenuItemOnClick(object _, RoutedEventArgs __)
         {
-            InitialiseBoardGrid();
+            StartNewGame();
         }
 
         private void ExitMenuItemOnClick(object _, RoutedEventArgs __)
@@ -89,13 +94,13 @@ namespace Minesweeper.Views
         private void OnYouWon(object sender, EventArgs eventArgs)
         {
             ShowMyMessageBox("You won!");
-            InitialiseBoardGrid();
+            StartNewGame();
         }
 
         private void OnYouLost(object sender, EventArgs eventArgs)
         {
             ShowMyMessageBox("Game over!");
-            InitialiseBoardGrid();
+            StartNewGame();
         }
 
         private void ShowMyMessageBox(string messageText)
