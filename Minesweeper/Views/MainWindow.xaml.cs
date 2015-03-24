@@ -46,8 +46,8 @@ namespace Minesweeper.Views
                     var squareButton = new Button();
                     squareButton.SetValue(Grid.RowProperty, row);
                     squareButton.SetValue(Grid.ColumnProperty, col);
-                    squareButton.Click += SquareButtonOnClick;
-                    squareButton.MouseRightButtonUp += SquareButtonOnMouseRightButtonUp;
+                    squareButton.Click += OnLeftClickSqusare;
+                    squareButton.MouseRightButtonUp += OnRightClickSquare;
                     squareButton.Tag = new Coords(row, col);
                     var contentPath = string.Format("[{0},{1}].DisplayText", row, col);
                     var contentBinding = new Binding(contentPath);
@@ -60,7 +60,7 @@ namespace Minesweeper.Views
             }
         }
 
-        private void SquareButtonOnClick(object sender, RoutedEventArgs _)
+        private void OnLeftClickSqusare(object sender, RoutedEventArgs _)
         {
             var button = (Button) sender;
             var coords = (Coords) button.Tag;
@@ -68,7 +68,7 @@ namespace Minesweeper.Views
             boardViewModel.UncoverSquare(coords);
         }
 
-        private void SquareButtonOnMouseRightButtonUp(object sender, MouseButtonEventArgs _)
+        private void OnRightClickSquare(object sender, MouseButtonEventArgs _)
         {
             var button = (Button) sender;
             var coords = (Coords) button.Tag;
@@ -86,14 +86,22 @@ namespace Minesweeper.Views
             Close();
         }
 
-        private void OnYouLost(object sender, EventArgs eventArgs)
+        private void OnYouWon(object sender, EventArgs eventArgs)
         {
+            ShowMyMessageBox("You won!");
             InitialiseBoardGrid();
         }
 
-        private void OnYouWon(object sender, EventArgs eventArgs)
+        private void OnYouLost(object sender, EventArgs eventArgs)
         {
+            ShowMyMessageBox("Game over!");
             InitialiseBoardGrid();
+        }
+
+        private void ShowMyMessageBox(string messageText)
+        {
+            var myMessageBox = new MyMessageBox { Owner = this, MessageText = messageText };
+            myMessageBox.ShowDialog();
         }
     }
 }
