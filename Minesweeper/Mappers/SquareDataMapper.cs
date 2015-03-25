@@ -40,7 +40,13 @@ namespace Minesweeper.Mappers
         public static SquareViewModel MapSquareDataToSquareViewModel(SquareData squareData)
         {
             var squareState = MapSquareDataToSquareState(squareData);
-            return new SquareViewModel(squareState, squareData.NumNeighouringMines ?? -1, squareData.IsMine);
+            return new SquareViewModel(squareState, squareData.NumNeighouringMines ?? -1, squareData.IsMine, null);
+        }
+
+        public static SquareViewModel MapSquareDataToSquareViewModel(SquareData squareData, Coords coords)
+        {
+            var squareState = MapSquareDataToSquareState(squareData);
+            return new SquareViewModel(squareState, squareData.NumNeighouringMines ?? -1, squareData.IsMine, coords);
         }
 
         public static string MapSquareStateToString(SquareState squareState, int? numNeighouringMines)

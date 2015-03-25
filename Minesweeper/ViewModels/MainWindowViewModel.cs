@@ -1,10 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Windows.Data;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Minesweeper.Mappers;
+using Minesweeper.Properties;
 using MinesweeperEngine;
 
 namespace Minesweeper.ViewModels
@@ -30,31 +31,39 @@ namespace Minesweeper.ViewModels
         {
             var mines = _mineLocationGenerator.GenerateMineLocations(_numRows, _numCols, _numMines);
             _board = Board.Create(_numRows, _numCols, mines);
+            RaisePropertyChanged(() => Squares);
             ConditionallyRaiseEvent(NewGame, true);
         }
 
         public void UncoverSquare(Coords coords)
         {
             _board.UncoverSquare(coords);
-            RaisePropertyChangedForIndexer();
+            RaisePropertyChanged(() => Squares);
             CheckForEndOfGame();
         }
 
         public void FlagSquare(Coords coords)
         {
             _board.FlagSquare(coords);
-            RaisePropertyChangedForIndexer();
+            RaisePropertyChanged(() => Squares);
             RaisePropertyChanged(() => UnflaggedMineCount);
             CheckForEndOfGame();
         }
 
-        public SquareViewModel this[int row, int col]
+        public IEnumerable<SquareViewModel> Squares
         {
             get
             {
-                var coords = new Coords(row, col);
-                var squareData = _board[coords];
-                return SquareDataMapper.MapSquareDataToSquareViewModel(squareData);
+                var allCoords =
+                    from row in Enumerable.Range(0, _numRows)
+                    from col in Enumerable.Range(0, _numCols)
+                    select new Coords(row, col);
+
+                return allCoords.Select(coords =>
+                {
+                    var squareData = _board[coords];
+                    return SquareDataMapper.MapSquareDataToSquareViewModel(squareData, coords);
+                });
             }
         }
 
@@ -87,13 +96,13 @@ namespace Minesweeper.ViewModels
         {
             ConditionallyRaiseEvent(YouWon, _board.IsCleared, () =>
             {
-                _dialogService.ShowMessageBox(Properties.Resources.YouWonMessage);
+                _dialogService.ShowMessageBox(Resources.YouWonMessage);
                 OnNewGame();
             });
 
             ConditionallyRaiseEvent(YouLost, _board.IsDetonated, () =>
             {
-                _dialogService.ShowMessageBox(Properties.Resources.YouLostMessage);
+                _dialogService.ShowMessageBox(Resources.YouLostMessage);
                 OnNewGame();
             });
         }
@@ -103,12 +112,6 @@ namespace Minesweeper.ViewModels
             if (!condition) return;
             if (eventHandler != null) eventHandler.Invoke(this, EventArgs.Empty);
             if (action != null) action();
-        }
-
-        private void RaisePropertyChangedForIndexer()
-        {
-            var handler = PropertyChangedHandler;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(Binding.IndexerName));
         }
 
         private void OnNewGame()

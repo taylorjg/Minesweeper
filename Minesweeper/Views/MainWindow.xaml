@@ -28,8 +28,65 @@
             </MenuItem>
         </Menu>
         
-        <Grid Grid.Row="1" Margin="10" Background="CadetBlue" ShowGridLines="True" x:Name="BoardGrid">
-        </Grid>
+        <!--<Grid Grid.Row="1" Margin="10" Background="CadetBlue" ShowGridLines="True" x:Name="BoardGrid">
+        </Grid>-->
+
+        <ItemsControl Grid.Row="1" Margin="10" ItemsSource="{Binding Path=Squares}" x:Name="BoardItemsControl">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid ShowGridLines="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button 
+                        Content="{Binding Path=DisplayText}"
+                        Background="{Binding Path=Color}"
+                        Command="{Binding Path=DataContext.UncoverSquareCommand, ElementName=BoardItemsControl}"
+                        CommandParameter="{Binding Path=Coords}"
+                        >
+                        <Button.InputBindings>
+                            <MouseBinding 
+                                Gesture="RightClick"
+                                Command="{Binding Path=DataContext.FlagSquareCommand, ElementName=BoardItemsControl}"
+                                CommandParameter="{Binding Path=Coords}"
+                                />
+                        </Button.InputBindings>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Grid.Row" Value="{Binding Path=Coords.Row}" />
+                    <Setter Property="Grid.Column" Value="{Binding Path=Coords.Col}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
 
         <StackPanel Grid.Row="2" Margin="10" Orientation="Horizontal">
             <Label Content="Unflagged mines: " VerticalAlignment="Center"></Label>
