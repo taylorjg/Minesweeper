@@ -11,7 +11,7 @@ namespace Minesweeper.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel(int numRows, int numCols, int numMines, IMineLocationGenerator mineLocationGenerator, DialogService dialogService)
+        public MainWindowViewModel(int numRows, int numCols, int numMines, IMineLocationGenerator mineLocationGenerator, IDialogService dialogService)
         {
             _numRows = numRows;
             _numCols = numCols;
@@ -135,8 +135,8 @@ namespace Minesweeper.ViewModels
         private readonly int _numCols;
         private readonly int _numMines;
         private readonly IMineLocationGenerator _mineLocationGenerator;
+        private readonly IDialogService _dialogService;
         private Board _board;
-        private readonly DialogService _dialogService;
         private RelayCommand _newGameCommand;
         private RelayCommand _exitCommand;
         private RelayCommand<Coords> _uncoverSquareCommand;
