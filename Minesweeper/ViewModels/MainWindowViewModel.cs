@@ -9,11 +9,16 @@ using MinesweeperEngine;
 
 namespace Minesweeper.ViewModels
 {
-    public class BoardViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
-        public BoardViewModel(Board board)
+        public MainWindowViewModel(int numRows, int numCols, int numMines, IMineLocationGenerator mineLocationGenerator, DialogService dialogService)
         {
-            _board = board;
+            _numRows = numRows;
+            _numCols = numCols;
+            _numMines = numMines;
+            _mineLocationGenerator = mineLocationGenerator;
+            _board = null;
+            _dialogService = dialogService;
         }
 
         public event EventHandler NewGame;
@@ -63,14 +68,24 @@ namespace Minesweeper.ViewModels
 
         private void CheckForEndOfGame()
         {
-            ConditionallyRaiseEvent(YouWon, _board.IsCleared);
-            ConditionallyRaiseEvent(YouLost, _board.IsDetonated);
+            ConditionallyRaiseEvent(YouWon, _board.IsCleared, () =>
+            {
+                ShowMessageBox("You won!");
+                OnNewGame();
+            });
+
+            ConditionallyRaiseEvent(YouLost, _board.IsDetonated, () =>
+            {
+                ShowMessageBox("You lost!");
+                OnNewGame();
+            });
         }
 
-        private void ConditionallyRaiseEvent(EventHandler eventHandler, bool condition)
+        private void ConditionallyRaiseEvent(EventHandler eventHandler, bool condition, Action action = null)
         {
-            if (!condition || eventHandler == null) return;
-            eventHandler.Invoke(this, EventArgs.Empty);
+            if (!condition) return;
+            if (eventHandler != null) eventHandler.Invoke(this, EventArgs.Empty);
+            if (action != null) action();
         }
 
         private void RaisePropertyChangedForIndexer()
@@ -79,8 +94,11 @@ namespace Minesweeper.ViewModels
             if (handler != null) handler(this, new PropertyChangedEventArgs(Binding.IndexerName));
         }
 
+        // TODO: could also have an override with parameters object containing new numRows/numCols/numMines
         private void OnNewGame()
         {
+            var mines = _mineLocationGenerator.GenerateMineLocations(_numRows, _numCols, _numMines);
+            _board = Board.Create(_numRows, _numCols, mines);
             ConditionallyRaiseEvent(NewGame, true);
         }
 
@@ -89,7 +107,17 @@ namespace Minesweeper.ViewModels
             ConditionallyRaiseEvent(Exit, true);
         }
 
-        private readonly Board _board;
+        private void ShowMessageBox(string messageText)
+        {
+            _dialogService.ShowMessageBox(messageText);
+        }
+
+        private readonly int _numRows;
+        private readonly int _numCols;
+        private readonly int _numMines;
+        private readonly IMineLocationGenerator _mineLocationGenerator;
+        private Board _board;
+        private readonly DialogService _dialogService;
         private RelayCommand _newGameCommand;
         private RelayCommand _exitCommand;
     }

@@ -72,17 +72,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Mappers\SquareDataMapper.cs" />
-    <Compile Include="ViewModels\BoardViewModel.cs" />
+    <Compile Include="ViewModels\DialogService.cs" />
+    <Compile Include="ViewModels\IDialogService.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SquareState.cs" />
     <Compile Include="ViewModels\SquareViewModel.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Views\MessageBox.xaml.cs">
       <DependentUpon>MessageBox.xaml</DependentUpon>

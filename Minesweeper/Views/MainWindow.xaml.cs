@@ -18,19 +18,20 @@ namespace Minesweeper.Views
         public MainWindow()
         {
             InitializeComponent();
-            StartNewGame();
-        }
 
-        public void StartNewGame()
-        {
-            var mines = new MineLocationGenerator().GenerateMineLocations(NumRows, NumCols, NumMines);
-            var boardViewModel = new BoardViewModel(Board.Create(NumRows, NumCols, mines));
-            boardViewModel.NewGame += OnNewGame;
-            boardViewModel.Exit += OnExit;
-            boardViewModel.YouWon += OnYouWon;
-            boardViewModel.YouLost += OnYouLost;
-            DataContext = boardViewModel;
-            InitialiseBoardGrid();
+            var mainWindowViewModel = new MainWindowViewModel(
+                NumRows,
+                NumCols,
+                NumMines,
+                new MineLocationGenerator(),
+                new DialogService(this));
+
+            mainWindowViewModel.NewGame += OnNewGame;
+            mainWindowViewModel.Exit += OnExit;
+
+            DataContext = mainWindowViewModel;
+
+            mainWindowViewModel.NewGameCommand.Execute(null);
         }
 
         private void InitialiseBoardGrid()
@@ -65,48 +66,32 @@ namespace Minesweeper.Views
             }
         }
 
+        // TODO: data bind to a Command instead - e.g. UncoverSquare ? Could then use a keyboard shortcut too e.g. Ctrl+U
         private void OnLeftClickSqusare(object sender, RoutedEventArgs _)
         {
             var button = (Button) sender;
             var coords = (Coords) button.Tag;
-            var boardViewModel = (BoardViewModel) DataContext;
-            boardViewModel.UncoverSquare(coords);
+            var mainWindowViewModel = (MainWindowViewModel) DataContext;
+            mainWindowViewModel.UncoverSquare(coords);
         }
 
+        // TODO: data bind to a Command instead - e.g. FlagSquare ? Could then use a keyboard shortcut too e.g. Ctrl+F
         private void OnRightClickSquare(object sender, MouseButtonEventArgs _)
         {
             var button = (Button) sender;
             var coords = (Coords) button.Tag;
-            var boardViewModel = (BoardViewModel) DataContext;
-            boardViewModel.FlagSquare(coords);
+            var mainWindowViewModel = (MainWindowViewModel) DataContext;
+            mainWindowViewModel.FlagSquare(coords);
         }
 
         private void OnNewGame(object _, EventArgs __)
         {
-            StartNewGame();
+            InitialiseBoardGrid();
         }
 
         private void OnExit(object _, EventArgs __)
         {
             Close();
-        }
-
-        private void OnYouWon(object sender, EventArgs eventArgs)
-        {
-            ShowMyMessageBox("You won!");
-            StartNewGame();
-        }
-
-        private void OnYouLost(object sender, EventArgs eventArgs)
-        {
-            ShowMyMessageBox("Game over!");
-            StartNewGame();
-        }
-
-        private void ShowMyMessageBox(string messageText)
-        {
-            var messageBox = new MessageBox { Owner = this, MessageText = messageText };
-            messageBox.ShowDialog();
         }
     }
 }
