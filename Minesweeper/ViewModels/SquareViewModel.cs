@@ -6,7 +6,7 @@ namespace Minesweeper.ViewModels
 {
     public class SquareViewModel
     {
-        public SquareViewModel(SquareState squareState, int numSurroundingMines, bool isMine, Coords coords)
+        public SquareViewModel(SquareState squareState, Coords coords, int numSurroundingMines, bool isMine)
         {
             _squareState = squareState;
             _numSurroundingMines = numSurroundingMines;

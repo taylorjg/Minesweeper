@@ -6,8 +6,8 @@ namespace Minesweeper.Views
 {
     public partial class MainWindow
     {
-        private const int NumRows = 10;
-        private const int NumCols = 10;
+        private const int NumRows = 9;
+        private const int NumCols = 9;
         private const int NumMines = 10;
 
         public MainWindow()

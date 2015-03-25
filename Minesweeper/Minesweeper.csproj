@@ -71,6 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AttachedProperties\GridHelpers.cs" />
     <Compile Include="Mappers\SquareDataMapper.cs" />
     <Compile Include="ViewModels\DialogService.cs" />
     <Compile Include="ViewModels\IDialogService.cs" />

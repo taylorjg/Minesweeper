@@ -29,8 +29,8 @@ namespace Minesweeper.ViewModels
 
         public void StartNewGame()
         {
-            var mines = _mineLocationGenerator.GenerateMineLocations(_numRows, _numCols, _numMines);
-            _board = Board.Create(_numRows, _numCols, mines);
+            var mines = _mineLocationGenerator.GenerateMineLocations(NumRows, NumCols, _numMines);
+            _board = Board.Create(NumRows, NumCols, mines);
             RaisePropertyChanged(() => Squares);
             ConditionallyRaiseEvent(NewGame, true);
         }
@@ -55,8 +55,8 @@ namespace Minesweeper.ViewModels
             get
             {
                 var allCoords =
-                    from row in Enumerable.Range(0, _numRows)
-                    from col in Enumerable.Range(0, _numCols)
+                    from row in Enumerable.Range(0, NumRows)
+                    from col in Enumerable.Range(0, NumCols)
                     select new Coords(row, col);
 
                 return allCoords.Select(coords =>
@@ -90,6 +90,16 @@ namespace Minesweeper.ViewModels
         public ICommand FlagSquareCommand
         {
             get { return _flagSquareCommand ?? (_flagSquareCommand = new RelayCommand<Coords>(OnFlagSquare)); }
+        }
+
+        public int NumRows
+        {
+            get { return _numRows; }
+        }
+
+        public int NumCols
+        {
+            get { return _numCols; }
         }
 
         private void CheckForEndOfGame()

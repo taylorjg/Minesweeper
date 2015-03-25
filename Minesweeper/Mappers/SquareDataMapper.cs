@@ -31,22 +31,10 @@ namespace Minesweeper.Mappers
             return squareState;
         }
 
-        public static string MapSquareDataToString(SquareData squareData)
-        {
-            var squareState = MapSquareDataToSquareState(squareData);
-            return MapSquareStateToString(squareState, squareData.NumNeighouringMines);
-        }
-
-        public static SquareViewModel MapSquareDataToSquareViewModel(SquareData squareData)
-        {
-            var squareState = MapSquareDataToSquareState(squareData);
-            return new SquareViewModel(squareState, squareData.NumNeighouringMines ?? -1, squareData.IsMine, null);
-        }
-
         public static SquareViewModel MapSquareDataToSquareViewModel(SquareData squareData, Coords coords)
         {
             var squareState = MapSquareDataToSquareState(squareData);
-            return new SquareViewModel(squareState, squareData.NumNeighouringMines ?? -1, squareData.IsMine, coords);
+            return new SquareViewModel(squareState, coords, squareData.NumNeighouringMines ?? -1, squareData.IsMine);
         }
 
         public static string MapSquareStateToString(SquareState squareState, int? numNeighouringMines)
