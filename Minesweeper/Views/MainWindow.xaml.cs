@@ -45,6 +45,8 @@ namespace Minesweeper.Views
             foreach (var _ in Enumerable.Range(0, NumCols)) BoardGrid.ColumnDefinitions.Add(new ColumnDefinition());
             // ReSharper restore UnusedVariable
 
+            var mainWindowViewModel = (MainWindowViewModel) DataContext;
+
             foreach (var row in Enumerable.Range(0, NumRows))
             {
                 foreach (var col in Enumerable.Range(0, NumCols))
@@ -52,9 +54,12 @@ namespace Minesweeper.Views
                     var squareButton = new Button();
                     squareButton.SetValue(Grid.RowProperty, row);
                     squareButton.SetValue(Grid.ColumnProperty, col);
-                    squareButton.Click += OnLeftClickSqusare;
-                    squareButton.MouseRightButtonUp += OnRightClickSquare;
                     squareButton.Tag = new Coords(row, col);
+
+                    squareButton.Command = mainWindowViewModel.UncoverSquareCommand;
+                    squareButton.CommandParameter = squareButton.Tag;
+
+                    squareButton.MouseRightButtonUp += OnRightClickSquare;
                     var contentPath = string.Format("[{0},{1}].DisplayText", row, col);
                     var contentBinding = new Binding(contentPath);
                     squareButton.SetBinding(ContentProperty, contentBinding);
@@ -66,16 +71,6 @@ namespace Minesweeper.Views
             }
         }
 
-        // TODO: data bind to a Command instead - e.g. UncoverSquare ? Could then use a keyboard shortcut too e.g. Ctrl+U
-        private void OnLeftClickSqusare(object sender, RoutedEventArgs _)
-        {
-            var button = (Button) sender;
-            var coords = (Coords) button.Tag;
-            var mainWindowViewModel = (MainWindowViewModel) DataContext;
-            mainWindowViewModel.UncoverSquare(coords);
-        }
-
-        // TODO: data bind to a Command instead - e.g. FlagSquare ? Could then use a keyboard shortcut too e.g. Ctrl+F
         private void OnRightClickSquare(object sender, MouseButtonEventArgs _)
         {
             var button = (Button) sender;

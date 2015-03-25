@@ -66,6 +66,16 @@ namespace Minesweeper.ViewModels
             get { return _exitCommand ?? (_exitCommand = new RelayCommand(OnExit)); }
         }
 
+        public ICommand UncoverSquareCommand
+        {
+            get { return _uncoverSquareCommand ?? (_uncoverSquareCommand = new RelayCommand<Coords>(OnUncoverSquare)); }
+        }
+
+        public ICommand FlagSquareCommand
+        {
+            get { return _flagSquareCommand ?? (_flagSquareCommand = new RelayCommand<Coords>(OnFlagSquare)); }
+        }
+
         private void CheckForEndOfGame()
         {
             ConditionallyRaiseEvent(YouWon, _board.IsCleared, () =>
@@ -107,6 +117,18 @@ namespace Minesweeper.ViewModels
             ConditionallyRaiseEvent(Exit, true);
         }
 
+        private void OnUncoverSquare(Coords coords)
+        {
+            System.Diagnostics.Debug.WriteLine("OnUncoverSquare - ({0},{1})", coords.Row, coords.Col);
+            UncoverSquare(coords);
+        }
+
+        private void OnFlagSquare(Coords coords)
+        {
+            System.Diagnostics.Debug.WriteLine("OnFlagSquare - ({0},{1})", coords.Row, coords.Col);
+            FlagSquare(coords);
+        }
+
         private void ShowMessageBox(string messageText)
         {
             _dialogService.ShowMessageBox(messageText);
@@ -120,5 +142,7 @@ namespace Minesweeper.ViewModels
         private readonly DialogService _dialogService;
         private RelayCommand _newGameCommand;
         private RelayCommand _exitCommand;
+        private RelayCommand<Coords> _uncoverSquareCommand;
+        private RelayCommand<Coords> _flagSquareCommand;
     }
 }
