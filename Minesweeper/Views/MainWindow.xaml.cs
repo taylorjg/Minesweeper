@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -51,32 +50,33 @@ namespace Minesweeper.Views
             {
                 foreach (var col in Enumerable.Range(0, NumCols))
                 {
+                    var coords = new Coords(row, col);
                     var squareButton = new Button();
                     squareButton.SetValue(Grid.RowProperty, row);
                     squareButton.SetValue(Grid.ColumnProperty, col);
-                    squareButton.Tag = new Coords(row, col);
+                    squareButton.Tag = coords;
 
                     squareButton.Command = mainWindowViewModel.UncoverSquareCommand;
-                    squareButton.CommandParameter = squareButton.Tag;
+                    squareButton.CommandParameter = coords;
 
-                    squareButton.MouseRightButtonUp += OnRightClickSquare;
+                    squareButton.InputBindings.Add(new MouseBinding
+                    {
+                        Gesture = new MouseGesture(MouseAction.RightClick),
+                        Command = mainWindowViewModel.FlagSquareCommand,
+                        CommandParameter = coords
+                    });
+
                     var contentPath = string.Format("[{0},{1}].DisplayText", row, col);
                     var contentBinding = new Binding(contentPath);
                     squareButton.SetBinding(ContentProperty, contentBinding);
+
                     var backgroundPath = string.Format("[{0},{1}].Color", row, col);
                     var backgroundBinding = new Binding(backgroundPath);
                     squareButton.SetBinding(BackgroundProperty, backgroundBinding);
+
                     BoardGrid.Children.Add(squareButton);
                 }
             }
-        }
-
-        private void OnRightClickSquare(object sender, MouseButtonEventArgs _)
-        {
-            var button = (Button) sender;
-            var coords = (Coords) button.Tag;
-            var mainWindowViewModel = (MainWindowViewModel) DataContext;
-            mainWindowViewModel.FlagSquare(coords);
         }
 
         private void OnNewGame(object _, EventArgs __)

@@ -26,6 +26,13 @@ namespace Minesweeper.ViewModels
         public event EventHandler YouWon;
         public event EventHandler YouLost;
 
+        public void StartNewGame()
+        {
+            var mines = _mineLocationGenerator.GenerateMineLocations(_numRows, _numCols, _numMines);
+            _board = Board.Create(_numRows, _numCols, mines);
+            ConditionallyRaiseEvent(NewGame, true);
+        }
+
         public void UncoverSquare(Coords coords)
         {
             _board.UncoverSquare(coords);
@@ -80,13 +87,13 @@ namespace Minesweeper.ViewModels
         {
             ConditionallyRaiseEvent(YouWon, _board.IsCleared, () =>
             {
-                ShowMessageBox("You won!");
+                _dialogService.ShowMessageBox(Properties.Resources.YouWonMessage);
                 OnNewGame();
             });
 
             ConditionallyRaiseEvent(YouLost, _board.IsDetonated, () =>
             {
-                ShowMessageBox("You lost!");
+                _dialogService.ShowMessageBox(Properties.Resources.YouLostMessage);
                 OnNewGame();
             });
         }
@@ -104,12 +111,9 @@ namespace Minesweeper.ViewModels
             if (handler != null) handler(this, new PropertyChangedEventArgs(Binding.IndexerName));
         }
 
-        // TODO: could also have an override with parameters object containing new numRows/numCols/numMines
         private void OnNewGame()
         {
-            var mines = _mineLocationGenerator.GenerateMineLocations(_numRows, _numCols, _numMines);
-            _board = Board.Create(_numRows, _numCols, mines);
-            ConditionallyRaiseEvent(NewGame, true);
+            StartNewGame();
         }
 
         private void OnExit()
@@ -119,19 +123,12 @@ namespace Minesweeper.ViewModels
 
         private void OnUncoverSquare(Coords coords)
         {
-            System.Diagnostics.Debug.WriteLine("OnUncoverSquare - ({0},{1})", coords.Row, coords.Col);
             UncoverSquare(coords);
         }
 
         private void OnFlagSquare(Coords coords)
         {
-            System.Diagnostics.Debug.WriteLine("OnFlagSquare - ({0},{1})", coords.Row, coords.Col);
             FlagSquare(coords);
-        }
-
-        private void ShowMessageBox(string messageText)
-        {
-            _dialogService.ShowMessageBox(messageText);
         }
 
         private readonly int _numRows;
