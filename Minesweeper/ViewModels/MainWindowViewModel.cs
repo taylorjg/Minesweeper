@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -19,12 +18,9 @@ namespace Minesweeper.ViewModels
             _numCols = numCols;
             _numMines = numMines;
             _mineLocationGenerator = mineLocationGenerator;
-            _board = null;
             _dialogService = dialogService;
+            _board = null;
         }
-
-        public event EventHandler YouWon;
-        public event EventHandler YouLost;
 
         public void StartNewGame()
         {
@@ -108,24 +104,17 @@ namespace Minesweeper.ViewModels
 
         private void CheckForEndOfGame()
         {
-            ConditionallyRaiseEvent(YouWon, _board.IsCleared, () =>
+            if (_board.IsCleared)
             {
                 _dialogService.ShowMessageBox(Resources.YouWonMessage);
                 OnNewGame();
-            });
+            }
 
-            ConditionallyRaiseEvent(YouLost, _board.IsDetonated, () =>
+            if (_board.IsDetonated)
             {
                 _dialogService.ShowMessageBox(Resources.YouLostMessage);
                 OnNewGame();
-            });
-        }
-
-        private void ConditionallyRaiseEvent(EventHandler eventHandler, bool condition, Action action = null)
-        {
-            if (!condition) return;
-            if (eventHandler != null) eventHandler.Invoke(this, EventArgs.Empty);
-            if (action != null) action();
+            }
         }
 
         private void OnNewGame()
