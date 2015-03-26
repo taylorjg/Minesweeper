@@ -1,5 +1,4 @@
-﻿using System;
-using Minesweeper.ViewModels;
+﻿using Minesweeper.ViewModels;
 using MinesweeperEngine;
 
 namespace Minesweeper.Views
@@ -14,23 +13,12 @@ namespace Minesweeper.Views
         {
             InitializeComponent();
 
-            var mainWindowViewModel = new MainWindowViewModel(
+            DataContext = new MainWindowViewModel(
                 NumRows,
                 NumCols,
                 NumMines,
                 new MineLocationGenerator(),
                 new DialogService(this));
-
-            mainWindowViewModel.Exit += OnExit;
-
-            DataContext = mainWindowViewModel;
-
-            mainWindowViewModel.NewGameCommand.Execute(null);
-        }
-
-        private void OnExit(object _, EventArgs __)
-        {
-            Close();
         }
     }
 }

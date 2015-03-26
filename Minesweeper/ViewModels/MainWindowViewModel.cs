@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -22,8 +23,6 @@ namespace Minesweeper.ViewModels
             _dialogService = dialogService;
         }
 
-        public event EventHandler NewGame;
-        public event EventHandler Exit;
         public event EventHandler YouWon;
         public event EventHandler YouLost;
 
@@ -32,7 +31,7 @@ namespace Minesweeper.ViewModels
             var mines = _mineLocationGenerator.GenerateMineLocations(NumRows, NumCols, _numMines);
             _board = Board.Create(NumRows, NumCols, mines);
             RaisePropertyChanged(() => Squares);
-            ConditionallyRaiseEvent(NewGame, true);
+            RaisePropertyChanged(() => UnflaggedMineCount);
         }
 
         public void UncoverSquare(Coords coords)
@@ -54,6 +53,8 @@ namespace Minesweeper.ViewModels
         {
             get
             {
+                if (_board == null) return Enumerable.Empty<SquareViewModel>();
+
                 var allCoords =
                     from row in Enumerable.Range(0, NumRows)
                     from col in Enumerable.Range(0, NumCols)
@@ -69,7 +70,10 @@ namespace Minesweeper.ViewModels
 
         public int UnflaggedMineCount
         {
-            get { return _board.UnflaggedMineCount; }
+            get
+            {
+                return _board == null ? 0 : _board.UnflaggedMineCount;
+            }
         }
 
         public ICommand NewGameCommand
@@ -129,9 +133,9 @@ namespace Minesweeper.ViewModels
             StartNewGame();
         }
 
-        private void OnExit()
+        private static void OnExit()
         {
-            ConditionallyRaiseEvent(Exit, true);
+            Application.Current.MainWindow.Close();
         }
 
         private void OnUncoverSquare(Coords coords)
