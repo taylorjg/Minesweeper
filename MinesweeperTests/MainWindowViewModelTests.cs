@@ -9,18 +9,17 @@ namespace MinesweeperTests
     public class MainWindowViewModelTests
     {
         [Test]
-        public void UncoveringMineRaisesYouLostEvent()
+        public void UncoveringMineShowsMessageBox()
         {
             var fakeMineLocationGenerator = A.Fake<IMineLocationGenerator>();
             var fakeDialogService = A.Fake<IDialogService>();
             var mainWindowViewModel = new MainWindowViewModel(5, 5, 1, fakeMineLocationGenerator, fakeDialogService);
             var mineCoords = new Coords(0, 0);
-            var eventRaised = false;
-            A.CallTo(() => fakeMineLocationGenerator.GenerateMineLocations(5, 5, 1)).Returns(new[]{mineCoords});
-            mainWindowViewModel.YouLost += (_, __) => { eventRaised = true; };
+            A.CallTo(() => fakeMineLocationGenerator.GenerateMineLocations(5, 5, 1)).Returns(new[] { mineCoords });
             mainWindowViewModel.StartNewGame();
             mainWindowViewModel.UncoverSquare(mineCoords);
-            Assert.That(eventRaised, Is.True, "Expected the YouLost event to have been raised");
+            A.CallTo(() => fakeDialogService.ShowMessageBox(A<string>._)).MustHaveHappened();
+            A.CallTo(() => fakeDialogService.ShowMessageBox("You lost!")).MustHaveHappened();
         }
     }
 }
