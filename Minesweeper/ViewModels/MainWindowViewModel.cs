@@ -12,20 +12,29 @@ namespace Minesweeper.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel(int numRows, int numCols, int numMines, IMineLocationGenerator mineLocationGenerator, IDialogService dialogService)
+        public MainWindowViewModel(IMineLocationGenerator mineLocationGenerator, IDialogService dialogService)
         {
-            _numRows = numRows;
-            _numCols = numCols;
-            _numMines = numMines;
+
             _mineLocationGenerator = mineLocationGenerator;
             _dialogService = dialogService;
             _board = null;
         }
 
+        public void SetBoardOptions(BoardOptions boardOptions)
+        {
+            _numRows = boardOptions.NumRows;
+            _numCols = boardOptions.NumCols;
+            _numMines = boardOptions.NumMines;
+            RaisePropertyChanged(() => NumRows);
+            RaisePropertyChanged(() => NumCols);
+            RaisePropertyChanged(() => UnflaggedMineCount);
+            StartNewGame();
+        }
+
         public void StartNewGame()
         {
-            var mines = _mineLocationGenerator.GenerateMineLocations(NumRows, NumCols, _numMines);
-            _board = Board.Create(NumRows, NumCols, mines);
+            var mines = _mineLocationGenerator.GenerateMineLocations(_numRows, _numCols, _numMines);
+            _board = Board.Create(_numRows, _numCols, mines);
             RaisePropertyChanged(() => Squares);
             RaisePropertyChanged(() => UnflaggedMineCount);
         }
@@ -77,6 +86,11 @@ namespace Minesweeper.ViewModels
             get { return _newGameCommand ?? (_newGameCommand = new RelayCommand(OnNewGame)); }
         }
 
+        public ICommand SetBoardOptionsCommand
+        {
+            get { return _setBoardOptionsCommand ?? (_setBoardOptionsCommand = new RelayCommand<BoardOptions>(OnSetBoardOptionsCommand)); }
+        }
+
         public ICommand ExitCommand
         {
             get { return _exitCommand ?? (_exitCommand = new RelayCommand(OnExit)); }
@@ -122,6 +136,11 @@ namespace Minesweeper.ViewModels
             StartNewGame();
         }
 
+        private void OnSetBoardOptionsCommand(BoardOptions boardOptions)
+        {
+            SetBoardOptions(boardOptions);
+        }
+
         private static void OnExit()
         {
             Application.Current.MainWindow.Close();
@@ -137,13 +156,14 @@ namespace Minesweeper.ViewModels
             FlagSquare(coords);
         }
 
-        private readonly int _numRows;
-        private readonly int _numCols;
-        private readonly int _numMines;
+        private int _numRows;
+        private int _numCols;
+        private int _numMines;
         private readonly IMineLocationGenerator _mineLocationGenerator;
         private readonly IDialogService _dialogService;
         private Board _board;
         private RelayCommand _newGameCommand;
+        private RelayCommand<BoardOptions> _setBoardOptionsCommand;
         private RelayCommand _exitCommand;
         private RelayCommand<Coords> _uncoverSquareCommand;
         private RelayCommand<Coords> _flagSquareCommand;

@@ -73,6 +73,7 @@
     </ApplicationDefinition>
     <Compile Include="AttachedProperties\GridHelpers.cs" />
     <Compile Include="Mappers\SquareDataMapper.cs" />
+    <Compile Include="ViewModels\BoardOptions.cs" />
     <Compile Include="ViewModels\DialogService.cs" />
     <Compile Include="ViewModels\IDialogService.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

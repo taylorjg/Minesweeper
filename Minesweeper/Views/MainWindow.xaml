@@ -4,16 +4,23 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:ap="clr-namespace:Minesweeper.AttachedProperties"
         xmlns:command="http://www.galasoft.ch/mvvmlight"
+        xmlns:viewModels="clr-namespace:Minesweeper.ViewModels"
         Title="Minesweeper"
         Height="600"
         Width="600"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         >
+    
+    <Window.Resources>
+        <viewModels:BoardOptions x:Key="BoardOptions" NumRows="10" NumCols="10" NumMines="9" />
+    </Window.Resources>
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <command:EventToCommand Command="{Binding Path=NewGameCommand}" />
+            <command:EventToCommand 
+                Command="{Binding Path=SetBoardOptionsCommand}" 
+                CommandParameter="{StaticResource BoardOptions}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     
@@ -40,7 +47,10 @@
         <ItemsControl Grid.Row="1" Margin="10" ItemsSource="{Binding Path=Squares}" x:Name="BoardItemsControl">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Grid ShowGridLines="True" ap:GridHelpers.RowCount="{Binding Path=NumRows}" ap:GridHelpers.ColumnCount="{Binding Path=NumCols}" />
+                    <Grid 
+                        ShowGridLines="True" 
+                        ap:GridHelpers.RowCount="{Binding Path=NumRows}" 
+                        ap:GridHelpers.ColumnCount="{Binding Path=NumCols}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
